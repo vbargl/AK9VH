@@ -53,7 +53,7 @@ namespace GameLogic.Components
 
             _origin = (0, 0);
             _data.Set(_origin, Direction.None);
-            originTilemap.SetTile(CellCenter(_origin), originTile);
+            originTilemap.SetTile(CorridorCenter(_origin), originTile);
 
             // (x=0,y) column direct down
             foreach (var pos in ForeachInclusive(..0, 1..(_dimensions.y - 1)))
@@ -104,7 +104,7 @@ namespace GameLogic.Components
             }
         }
 
-        public Vector3 OriginPosition() => CellCenter(_origin) + _grid.cellSize / 2;
+        public Vector3 OriginPosition() => CorridorCenter(_origin) + _grid.cellSize / 2;
 
         public void Move(Direction newDir)
         {
@@ -115,10 +115,10 @@ namespace GameLogic.Components
                 return;
 
             _data.Set(_origin, newDir);
-            originTilemap.SetTile(CellCenter(_origin), null);
+            originTilemap.SetTile(CorridorCenter(_origin), null);
             Close(newOrigin, _data.Get(newOrigin));
             _data.Set(newOrigin, Direction.None);
-            originTilemap.SetTile(CellCenter(newOrigin), originTile);
+            originTilemap.SetTile(CorridorCenter(newOrigin), originTile);
             Open(_origin, newDir);
             _origin = newOrigin;
         }
@@ -174,7 +174,7 @@ namespace GameLogic.Components
             return new BoundsInt(offset + position, size);
         }
 
-        public Vector3Int CellCenter((int, int) pos)
+        public Vector3Int CorridorCenter((int, int) pos)
         {
             if (!InBounds(pos))
                 return Vector3Int.zero;

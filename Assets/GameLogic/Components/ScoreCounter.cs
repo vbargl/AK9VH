@@ -13,11 +13,6 @@ namespace GameLogic.Components
         void Start() => 
             AddScore(0);
 
-        public void OnCollisionEnter2D(Collision2D _) =>
-            AddScore(1);
-
-        // Update is called once per frame
-
         public void AddScore() => AddScore(1);
         public void AddScore(int scoreToAdd)
         {

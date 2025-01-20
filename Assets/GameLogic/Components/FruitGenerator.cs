@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using GameLogic.Utils;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
@@ -9,14 +14,14 @@ namespace GameLogic.Components
     public class FruitGenerator : MonoBehaviour
     {
         public Maze maze;
+        public ScoreCounter scoreCounter;
         
-        public Tilemap tilemap;
-        public Tile tile;
-
-        private Vector3Int _lastPos;
+        public GameObject prefab;
         
         [Range(1.0f, 50.0f)]
         public int numberOfFruits;
+
+        public List<Sprite> availableFruitSprites;
 
         public void Start()
         {
@@ -24,28 +29,18 @@ namespace GameLogic.Components
                 GenerateFruit();
         }
         
-        public void RegenerateFruit()
-        {
-            DeleteFruit();
-            GenerateFruit();
-        }
-        
         private void GenerateFruit()
         {
-            var (xDim, yDim) = maze.Dimensions();
-            var x = Random.Range(0, xDim);
-            var y = Random.Range(0, yDim);
-
-            var pos = maze.CellCenter((x, y));
-            tilemap.SetTile(pos, tile);
-            _lastPos = pos;
-            Debug.Log($"Fruit generated at {pos}");
-        }
-
-        private void DeleteFruit()
-        {
-            tilemap.SetTile(_lastPos, null);
-            _lastPos = new Vector3Int();
+            var fruit = Instantiate(prefab, transform);
+            
+            var spriteRenderer = fruit.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = CollectionUtils.RandomList(availableFruitSprites);
+            
+            var repositioner = fruit.GetComponent<Repositioner>();
+            repositioner.maze = maze;
+            
+            var collisionEmitter = fruit.GetComponent<CollisionEventEmitter>();
+            collisionEmitter.events.AddListener(scoreCounter.AddScore);
         }
     }
 }
